@@ -2,28 +2,18 @@ import { useEffect, useState } from 'react';
 const dashSymbol = '-';
 const hashtagSymbol = '#';
 
-function App () {
+function App() {
+  const [textInformation, setTextInformation] = useState<unknown>();
 
-const [textInformation, setTextInformation] = useState<unknown>();
-
-useEffect(() => {
   const keyDownHandler = (event: any) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setTextInformation(<br />);
     }
   };
-  document.addEventListener('keydown', keyDownHandler);
 
-  return () => {
-    document.removeEventListener('keydown', keyDownHandler);
-  };
-}, []);
-
-
-  const handleTextChange = (textValue = '', code = '') => {
+  const handleTextChange = (textValue = '') => {
     //TODO Find a way to implement second point of the AC (see README for full info)
-    console.log('hereee', code)
     if (textValue.length === 0) {
       setTextInformation(<br />);
       return;
@@ -69,7 +59,11 @@ useEffect(() => {
 
   return (
     <div>
-      <textarea onChange={(e: any) => handleTextChange(e.target.value, e.key)} rows={5} />
+      <textarea
+        onChange={(e: any) => handleTextChange(e.target.value)}
+        rows={5}
+        onKeyDown={keyDownHandler}
+      />
       <>{textInformation}</>
     </div>
   );
