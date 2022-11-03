@@ -1,70 +1,40 @@
-import { useEffect, useState } from 'react';
-const dashSymbol = '-';
-const hashtagSymbol = '#';
+import { useState } from "react";
 
 function App() {
-  const [textInformation, setTextInformation] = useState<unknown>();
+  const [textInformation, setTextInformation] = useState<string>("");
 
-  const keyDownHandler = (event: any) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      setTextInformation(<br />);
-    }
-  };
+  const handleTextChanges = (value: string) =>
+    setTextInformation(
+      value
+        .split("\n")
+        .map((line: string) => {
+          if (line.lastIndexOf("---") === 0)
+            return `<hr />${line.split("---")[1]}`;
 
-  const handleTextChange = (textValue = '') => {
-    //TODO Find a way to implement second point of the AC (see README for full info)
-    if (textValue.length === 0) {
-      setTextInformation(<br />);
-      return;
-    }
-    if (textValue.split('')[0] === hashtagSymbol && textValue.split('')[1] !== hashtagSymbol) {
-      setTextInformation(
-        <h1>
-          {textValue
-            .split('')
-            .filter((t) => t !== hashtagSymbol)
-            .filter((t) => t !== `${hashtagSymbol}${hashtagSymbol}`)
-            .join('')}
-        </h1>,
-      );
+          const lastIndexOfHashtag = line.lastIndexOf("#");
+          const checkString = line.slice(0, lastIndexOfHashtag);
 
-      return;
-    }
+          if (
+            lastIndexOfHashtag > 0 &&
+            checkString.length - checkString.replaceAll("#", "").length === 0
+          )
+            return line;
 
-    if (textValue.split('')[0] === hashtagSymbol && textValue.split('')[1] === hashtagSymbol) {
-      setTextInformation(
-        <h2>
-          {textValue
-            .split('')
-            .filter((t) => t !== hashtagSymbol)
-            .filter((t) => t !== `${hashtagSymbol}${hashtagSymbol}`)
-            .join('')}
-        </h2>,
-      );
-      return;
-    }
-
-    if (
-      textValue.split('')[0] === dashSymbol &&
-      textValue.split('')[1] === dashSymbol &&
-      textValue.split('')[2] === dashSymbol
-    ) {
-      setTextInformation(<hr />);
-      return;
-    }
-
-    return setTextInformation(<p>{textValue}</p>);
-  };
+          return `<h${lastIndexOfHashtag + 1}>${line.slice(
+            lastIndexOfHashtag + 1
+          )}</h${lastIndexOfHashtag + 1}>`;
+        })
+        .join("<br />")
+    );
 
   return (
     <div>
       <textarea
-        onChange={(e: any) => handleTextChange(e.target.value)}
+        onChange={(e: any) => handleTextChanges(e.target.value)}
         rows={5}
-        onKeyDown={keyDownHandler}
       />
-      <>{textInformation}</>
+      <br />
+      <div dangerouslySetInnerHTML={{ __html: textInformation }}></div>
     </div>
   );
 }
